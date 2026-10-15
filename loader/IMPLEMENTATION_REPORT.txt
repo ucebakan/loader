@@ -1,0 +1,72 @@
+AMIDEWIN COMPATIBILITY LAYER - IMPLEMENTATION REPORT
+====================================================
+
+Scope
+-----
+The supplied package did not contain the production loader source project.
+Therefore no original EXE, authentication, GUI, registry, disk, driver/service,
+WMI, or download implementation was modified. The two original EXEs and both
+original DLLs in the copied package are byte-for-byte identical to the source
+package. A narrow x64 compatibility launcher and AMIDEWIN proxy were added.
+
+New source files and functions
+------------------------------
+AmiBackendSelector.cpp / AmiBackendSelector.h
+  - SelectCompatibleAmiTool
+  - IsSuccessfulProbeOutput
+  - RunCaptured
+  - ForwardToSelectedTool
+  - ReadCachedSelection / SaveSelection
+  - EmitProbeHeader / EmitLine
+
+AmiBackendProxyMain.cpp
+  - wmain
+
+LoaderAmiBootstrapMain.cpp
+  - wWinMain
+  - DeployCompatibilityLayer
+  - PackageLooksStable
+  - FilesEqual / CopyReplacing
+
+AmiBackendTests.cpp
+  - parser acceptance/rejection tests for valid /SM output, known SMBIOS
+    failures, timeout, crash, and missing read markers
+
+CMakeLists.txt / app.manifest
+  - Release x64 targets, static MSVC runtime, administrator manifest
+
+AMIDEWIN storage and runtime copy
+---------------------------------
+Packaged 5.27 source assets:
+  <loader copy>\AMITools527\AMIDEWINx64.EXE
+  <loader copy>\AMITools527\amifldrv64.sys
+  <loader copy>\AMITools527\amigendrv64.sys
+
+After the existing ks_driver extraction is stable:
+  - extracted 5.20 is preserved under C:\ks1\AMITools520\
+  - packaged 5.27 is copied under C:\ks1\AMITools527\
+  - C:\ks1\AMITools\AMIDEWINx64.EXE becomes AmiBackendProxy.exe
+  - C:\ks1\AMITools\sdeven.sys remains untouched
+
+Backend selection
+-----------------
+1. Read an existing per-extraction selected-path cache, if present.
+2. Otherwise run 5.27.00.0003 with the read-only /SM argument while capturing
+   combined stdout/stderr with a 30-second timeout.
+3. Accept only output containing (/SM), System manufacture, and Done.
+4. Reject known failure text, start failures, crashes, and timeouts.
+5. If rejected, probe 5.20.0042 with the same rules.
+6. Save one selected executable path and forward all existing downstream
+   AMIDEWIN arguments to it. No per-command fallback is performed.
+7. If neither candidate passes, return ERROR_NOT_SUPPORTED and log that no
+   compatible SMBIOS backend is available.
+
+Build and verification
+----------------------
+Configuration: Release x64 (MSVC 19.44 / Visual Studio 2022)
+CTest: 1/1 passed
+Original EXE/DLL integrity: all four hashes matched the source package
+
+Final launcher
+--------------
+C:\loader\bypass-amidewin527\4unityoffline-login-bypass-AMIDEWIN527.exe
