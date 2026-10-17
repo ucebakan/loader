@@ -3,3 +3,5 @@ bypass-amidewin527/** -text whitespace=cr-at-eol
 bypass-amidewin527/loaderbypass.exe filter=lfs diff=lfs merge=lfs -text
 4UnityTools/4UnityTools.exe filter=lfs diff=lfs merge=lfs -text
 loader/loaderbypass.exe filter=lfs diff=lfs merge=lfs -text
+loader/bypass-amidewin520/** -text whitespace=cr-at-eol
+loader/bypass-amidewin520/loaderbypass.exe filter=lfs diff=lfs merge=lfs -text

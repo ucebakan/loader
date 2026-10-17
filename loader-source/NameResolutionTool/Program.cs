@@ -67,6 +67,23 @@ static class Program
             if (args.Length < 2) throw new ArgumentException("inspect <bundle> | patch <bundle> <new-output> | --self-test | --resolve-ui <directory>");
             string input = Path.GetFullPath(args[1]);
             string inputHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(input)));
+            if (args[0] == "inspect-download")
+            {
+                if (inputHash != OriginalBundleHash && inputHash != "B39D96667DFECCE5D11E33D9DAB6744DCDE09F93C097047E676417307ECC3FBB")
+                    throw new InvalidDataException("Unknown bundle; inspection refused");
+                var app = ReadBundle(input).Single(e => e.Name == "4unityoffline-login-bypass.dll");
+                using var inspected = ModuleDefMD.Load(Payload(input, app));
+                foreach (var method in inspected.GetTypes().SelectMany(t => t.Methods).Where(m => m.HasBody))
+                {
+                    var related = method.Body.Instructions.Where(i =>
+                        (i.Operand is IMethod called && System.Text.RegularExpressions.Regex.IsMatch(called.FullName, "Download|HttpClient|WebClient|ZipFile|ExtractToDirectory|curl", System.Text.RegularExpressions.RegexOptions.IgnoreCase)) ||
+                        (i.OpCode == OpCodes.Ldstr && i.Operand is string literal && System.Text.RegularExpressions.Regex.IsMatch(literal, "ks_driver|AMITools|download|https?://", System.Text.RegularExpressions.RegexOptions.IgnoreCase))).ToArray();
+                    Console.WriteLine($"Method={method.FullName}; download-sites={related.Length}");
+                    foreach (var site in related)
+                        Console.WriteLine(site.OpCode == OpCodes.Ldstr ? $"  IL_{site.Offset:X4}: download-related string (value omitted)" : "  " + site);
+                }
+                return 0;
+            }
             if (inputHash != OriginalBundleHash) throw new InvalidDataException("Unexpected input bundle hash; no edits permitted");
             var entries = ReadBundle(input);
             foreach(var config in entries.Where(e => e.Name.EndsWith(".runtimeconfig.json", StringComparison.Ordinal)))

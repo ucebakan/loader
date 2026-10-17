@@ -22,6 +22,7 @@ std::filesystem::path ModuleDirectory()
     return std::filesystem::path(std::wstring(buffer.data(), length)).parent_path();
 }
 
+#ifndef LOADER_BACKEND_520_ONLY
 bool FilesEqual(const std::filesystem::path& left, const std::filesystem::path& right)
 {
     std::error_code error;
@@ -173,6 +174,7 @@ bool DeployCompatibilityLayer(const std::filesystem::path& moduleDirectory)
     std::filesystem::remove(L"C:\\ks1\\AMIToolsBackend\\selected.txt", error);
     return true;
 }
+#endif
 
 std::wstring QuoteArgument(const std::wstring& argument)
 {
@@ -287,7 +289,9 @@ int WINAPI wWinMain(HINSTANCE, HINSTANCE, PWSTR, int)
     CloseHandle(process.hThread);
     while (WaitForSingleObject(process.hProcess, 50) == WAIT_TIMEOUT)
     {
+#ifndef LOADER_BACKEND_520_ONLY
         DeployCompatibilityLayer(moduleDirectory);
+#endif
     }
 
     DWORD exitCode = ERROR_GEN_FAILURE;
