@@ -1,8 +1,15 @@
-# 4UnityTools · Control Center 0.9.28
+# 4UnityTools · Control Center 0.9.29
+
+0.9.29 — Native köprü yükleme düzeltmesi: Gömülü DLL'ler EXE'nin yanındaki
+`native/<içerik özeti>/` klasörüne otomatik çıkarılır. Mevcut AppData konumunda
+başarısız olan aynı DLL baytları proje klasöründen doğrulandı. İçerik kontrolleri,
+sürümler arası ayrı DLL yolları ve yönetici izni korunur; ayarlar/profiller ve
+Telegram kayıtlarının konumu değişmez. Oyun fonksiyonları ve build imzaları
+değiştirilmedi. Tam oyun davranışı ayrıca doğrulanmalıdır.
 
 ## Git dağıtımı
 
-Bu klasördeki `4UnityTools.exe`, son teslim edilen 0.9.28 Windows x64 sürümüdür.
+Bu klasördeki `4UnityTools.exe`, son teslim edilen 0.9.29 Windows x64 sürümüdür.
 EXE, .NET çalışma zamanını, yerel DLL'leri ve yerleşik profilleri içerir;
 çalıştırmak için ek DLL veya SDK kurulumu gerekmez. Klasörü indirip EXE'yi aç;
 Windows yönetici izni ister. Mevcut kullanıcı ayarları `%LOCALAPPDATA%/4UnityTools`
@@ -18,7 +25,7 @@ Get-FileHash .\4UnityTools\4UnityTools.exe -Algorithm SHA256
 
 Hash, bu klasördeki `SHA256SUMS.txt` ile eşleşmelidir. GitHub'ın otomatik kaynak ZIP'i
 LFS ayarına göre yalnız işaretçi dosyasını içerebilir; EXE'nin gerçek boyutu
-145392184 bayttır. `BOT.md` ve `NO-MOB-DAMAGE.md` ek kullanım belgeleridir;
+145399915 bayttır. `BOT.md` ve `NO-MOB-DAMAGE.md` ek kullanım belgeleridir;
 güncel davranış için aşağıdaki sürüm notları esas alınır.
 
 Aşağıdaki geçmiş sürüm notlarında anılan kaynak/kanıt yolları, ZIP'ler ve geri alma
@@ -519,7 +526,7 @@ teslim kopyasının gömülü EXE manifesti `verify-uac.ps1` ile ayrıca doğrul
 - `native/aoe_layout.inc`: birleşik build için ölçüme dayalı AOE yerleşimi.
 - C# araçları proje referansları ile kullanılır; ayrı EXE başlatılmaz.
 - Yerel DLL'ler ve AOE profilleri tek EXE'ye gömülüdür. DLL'ler Windows tarafından
-  yüklenebilmek için `%LOCALAPPDATA%/4UnityTools/native` altına içerik özetiyle çıkarılır.
+  yüklenebilmek için EXE'nin yanındaki `native/<içerik özeti>` altına çıkarılır.
 - AOE profil/belgeleri ve Suite'e ait ayarları `%LOCALAPPDATA%/4UnityTools/AOE`
   altında bulunur. XYZ ve Speed/Jump önbellekleri kendi alt klasörlerindedir.
   Invisible/Aggro ve MobTP mevcut kullanıcı ayar/geri-alma konumlarını kullanır.
